@@ -189,3 +189,4 @@ if __name__ == "__main__":
 
     num_start = num_now
     reduce_possible_by_possibles()
+
