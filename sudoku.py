@@ -31,10 +31,12 @@ class Cell(object):
       return "*"
     return str(self.possibles[0])
 
-  def printable(self):
+  def printable(self, debug=False):
     if len(self.possibles) > 1:
-      #return "[%s]" % str(self.possibles)
-      return "*"
+      if debug:
+        return str(self.possibles)
+      else:
+        return "*"
     return str(self.possibles[0])
 
 def load_table(file_name):
@@ -45,10 +47,10 @@ def load_table(file_name):
       ch = lines[ii][jj:jj+1]
       table[ii][jj] = Cell(ch)
 
-def print_table():
+def print_table(debug=False):
   for ii in range(9):
     for jj in range(9):
-      print(table[ii][jj].printable()),
+      print(table[ii][jj].printable(debug)),
     print ""
 
 def get_determined_num():
@@ -180,7 +182,10 @@ if __name__ == "__main__":
     reduce_possible_by_determines()
     num_now = get_determined_num()
     if num_now == 81 or num_now == num_start:
-      print "Done!"
+      print "Stopped at %d numbers done!" % num_now
+      if num_now != 81:
+        print_table(debug=True)
       break
+
     num_start = num_now
     reduce_possible_by_possibles()
