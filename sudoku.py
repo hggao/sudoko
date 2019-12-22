@@ -161,6 +161,9 @@ def reduce_possible_by_possibles():
         reduce_poss_from_row(ii, jj)
         reduce_poss_from_col(ii, jj)
 
+def reduce_possible_by_block():
+  pass
+
 if __name__ == "__main__":
   # Get the commandline arguements
   parser = argparse.ArgumentParser()
@@ -189,4 +192,4 @@ if __name__ == "__main__":
 
     num_start = num_now
     reduce_possible_by_possibles()
-
+    reduce_possible_by_block()
