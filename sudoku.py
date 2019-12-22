@@ -161,13 +161,69 @@ def reduce_possible_by_possibles():
         reduce_poss_from_row(ii, jj)
         reduce_poss_from_col(ii, jj)
 
+def find_single_line_possible(blk_row, blk_col):
+  ''' Search a 3x3 block, find out if there's a undermined number appears only
+      on a single row or column.
+  '''
+  all_poss = []
+  for rr in range(3):
+    for cc in range(3):
+      poss = table[blk_row*3+rr][blk_col*3+cc].possibles
+      if len(poss) > 1:
+       all_poss += poss
+
+  result = []
+  for nn in all_poss:
+    nn_rows = []
+    nn_cols = []
+    for rr in range(3):
+      for cc in range(3):
+        rrr = blk_row*3+rr
+        ccc = blk_col*3+cc
+        poss = table[rrr][ccc].possibles
+        if nn in poss:
+          if rrr not in nn_rows:
+            nn_rows.append(rrr)
+          if ccc not in nn_cols:
+            nn_cols.append(ccc)
+    if len(nn_rows) == 1:
+      assert len(nn_cols) > 1, "len(nn_cols) should be > 1"
+      print "=== n=%d, nn_rows=%s" % (nn, str(nn_rows))
+      result.append((nn, nn_rows[0], None))
+    if len(nn_cols) == 1:
+      assert len(nn_rows) > 1, "len(nn_rows) should be > 1"
+      print "=== n=%d, nn_cols=%s" % (nn, str(nn_cols))
+      result.append((nn, None, nn_cols[0]))
+
+  return result
+
+def reduce_row_of_other_blocks(num, row, blk_col):
+  for col in range(9):
+    if col < blk_col*3 or col >= blk_col*3+3:
+      if num in table[row][col].possibles:
+        table[row][col].possibles.remove(num)
+
+def reduce_col_of_other_blocks(num, col, blk_row):
+  for row in range(9):
+    if row < blk_row*3 or row >= blk_row*3+3:
+      if num in table[row][col].possibles:
+        table[row][col].possibles.remove(num)
+
 def reduce_possible_by_block():
-  pass
+  for blk_row in range(3):
+    for blk_col in range(3):
+      all_finds = find_single_line_possible(blk_row, blk_col)
+      for (num, row, col) in all_finds:
+        if num:
+         if row:
+           reduce_row_of_other_blocks(num, row, blk_col)
+         else:
+           reduce_col_of_other_blocks(num, col, blk_row)
 
 if __name__ == "__main__":
   # Get the commandline arguements
   parser = argparse.ArgumentParser()
-  parser.add_argument("-i", "--input", type=str, default="37.txt", help="Specify input file")
+  parser.add_argument("-i", "--input", type=str, default="71.txt", help="Specify input file")
   args = parser.parse_args()
   print "Input : " + args.input
   if not args.input:
