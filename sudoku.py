@@ -186,13 +186,9 @@ def find_single_line_possible(blk_row, blk_col):
             nn_rows.append(rrr)
           if ccc not in nn_cols:
             nn_cols.append(ccc)
-    if len(nn_rows) == 1:
-      assert len(nn_cols) > 1, "len(nn_cols) should be > 1"
-      print "=== n=%d, nn_rows=%s" % (nn, str(nn_rows))
+    if len(nn_rows) == 1 and len(nn_cols) > 1:
       result.append((nn, nn_rows[0], None))
-    if len(nn_cols) == 1:
-      assert len(nn_rows) > 1, "len(nn_rows) should be > 1"
-      print "=== n=%d, nn_cols=%s" % (nn, str(nn_cols))
+    if len(nn_cols) == 1 and len(nn_rows) > 1:
       result.append((nn, None, nn_cols[0]))
 
   return result
@@ -214,11 +210,10 @@ def reduce_possible_by_block():
     for blk_col in range(3):
       all_finds = find_single_line_possible(blk_row, blk_col)
       for (num, row, col) in all_finds:
-        if num:
-         if row:
-           reduce_row_of_other_blocks(num, row, blk_col)
-         else:
-           reduce_col_of_other_blocks(num, col, blk_row)
+        if row is not None:
+          reduce_row_of_other_blocks(num, row, blk_col)
+        else:
+          reduce_col_of_other_blocks(num, col, blk_row)
 
 if __name__ == "__main__":
   # Get the commandline arguements
@@ -238,6 +233,7 @@ if __name__ == "__main__":
 
   num_start = get_determined_num()
   while (True):
+    print "=== 1 === Applying rule 1 ......"
     reduce_possible_by_determines()
     num_now = get_determined_num()
     if num_now == 81 or num_now == num_start:
@@ -247,5 +243,8 @@ if __name__ == "__main__":
       break
 
     num_start = num_now
+    print "=== 2 === Applying rule 2 ......"
     reduce_possible_by_possibles()
+
+    print "=== 3 === Applying rule 3 ......"
     reduce_possible_by_block()
